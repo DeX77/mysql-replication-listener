@@ -65,11 +65,11 @@ int proto_read_package_header(tcp::socket *socket, boost::asio::streambuf &buff,
   char ch;
   std::istream is(&buff);
   is.get(ch);
-  *packet_length = (unsigned long)ch;
+  *packet_length= (unsigned long)ch;
   is.get(ch);
-  *packet_length += (unsigned long)(ch<<8);
+  *packet_length+= (unsigned long)(ch<<8);
   is.get(ch);
-  *packet_length += (unsigned long)(ch<<16);
+  *packet_length+= (unsigned long)(ch<<16);
   is.get(ch);
   *packet_no= (unsigned char)ch;
   return 0;
@@ -428,7 +428,7 @@ Row_event *proto_rows_event(std::istream &is, Log_event_header *header)
      >> proto_flags
      >> proto_column_len;
 
-  rev->table_id = table_id.integer;
+  rev->table_id=table_id.integer;
   int used_column_len=(int) ((rev->columns_len + 7) / 8);
   Protocol_chunk_vector proto_used_columns(rev->used_columns, used_column_len);
   rev->null_bits_len= used_column_len;
@@ -446,7 +446,7 @@ Row_event *proto_rows_event(std::istream &is, Log_event_header *header)
     bytes_read+=used_column_len;
 
   unsigned long row_len= header->event_length - bytes_read - LOG_EVENT_HEADER_SIZE + 1;
-  std::cout << "Bytes read: " << bytes_read << " Bytes expected: " << row_len << std::endl;
+  //std::cout << "Bytes read: " << bytes_read << " Bytes expected: " << rev->row_len << std::endl;
   Protocol_chunk_vector proto_row(rev->row, row_len);
   is >> proto_row;
 

@@ -83,9 +83,9 @@ int calc_field_size(unsigned char column_type, const unsigned char *field_ptr, b
   case mysql::system::MYSQL_TYPE_LONG:
     length= 4;
     break;
-  case MYSQL_TYPE_LONGLONG:
-    length= 8;
-    break;
+//  case MYSQL_TYPE_LONGLONG:
+//    length= 8;
+//    break;
   case mysql::system::MYSQL_TYPE_NULL:
     length= 0;
     break;
@@ -120,9 +120,7 @@ int calc_field_size(unsigned char column_type, const unsigned char *field_ptr, b
   case mysql::system::MYSQL_TYPE_VARCHAR:
   {
     length= metadata > 255 ? 2 : 1;
-
     length+= length == 1 ? (boost::uint32_t) *field_ptr : *((boost::uint16_t *)field_ptr);
-
     break;
   }
   case mysql::system::MYSQL_TYPE_TINY_BLOB:
@@ -212,12 +210,7 @@ char *Value::as_c_str(unsigned long &size) const
   /*
    Length encoded; First byte is length of string.
   */
-//todo metadata_length 算法
-
-
-  int metadata_length= m_metadata > 255 ? 2 : 1;
-
-  std::cout << "m_size " << metadata_length << std::endl;
+  int metadata_length= m_size > 251 ? 2: 1;
   /*
    Size is length of the character string; not of the entire storage
   */
@@ -318,7 +311,7 @@ void Converter::to(std::string &str, const Value &val) const
 {
   if (val.is_null())
   {
-    str= "NULL";
+    str= "(NULL)";
     return;
   }
 
@@ -394,9 +387,7 @@ void Converter::to(std::string &str, const Value &val) const
     case MYSQL_TYPE_VARCHAR:
     {
       unsigned long size;
-
       char *ptr= val.as_c_str(size);
-
       str.append(ptr, size);
     }
       break;
@@ -453,97 +444,6 @@ void Converter::to(float &out, const Value &val) const
   default:
     out= 0;
   }
-}
-
-
-void Converter::to(long long &out, const Value &val) const
-{
-	switch(val.type())
-	  {
-	    case MYSQL_TYPE_DECIMAL:
-	      // TODO
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_TINY:
-	      out= val.as_int8();
-	      break;
-	    case MYSQL_TYPE_SHORT:
-	      out= val.as_int16();
-	      break;;
-	    case MYSQL_TYPE_LONG:
-	      out= (long long)val.as_int32();
-	      break;
-	    case MYSQL_TYPE_FLOAT:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_DOUBLE:
-	      out= (long long)val.as_double();
-	    case MYSQL_TYPE_NULL:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_TIMESTAMP:
-	      out=(boost::uint32_t)val.as_int32();
-	      break;
-
-	    case MYSQL_TYPE_LONGLONG:
-	      out= (long long)val.as_int64();
-	      break;
-	    case MYSQL_TYPE_INT24:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_DATE:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_TIME:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_DATETIME:
-	      out= (long long)val.as_int64();
-	      break;
-	    case MYSQL_TYPE_YEAR:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_NEWDATE:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_VARCHAR:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_BIT:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_NEWDECIMAL:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_ENUM:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_SET:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_TINY_BLOB:
-	    case MYSQL_TYPE_MEDIUM_BLOB:
-	    case MYSQL_TYPE_LONG_BLOB:
-	    case MYSQL_TYPE_BLOB:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_VAR_STRING:
-	    {
-	      std::string str;
-	      str.append(val.storage(), val.length());
-	      out= boost::lexical_cast<long>(str.c_str());
-	    }
-	      break;
-	    case MYSQL_TYPE_STRING:
-	      out= 0;
-	      break;
-	    case MYSQL_TYPE_GEOMETRY:
-	      out= 0;
-	      break;
-	    default:
-	      out= 0;
-	      break;
-	  }
 }
 
 void Converter::to(long &out, const Value &val) const

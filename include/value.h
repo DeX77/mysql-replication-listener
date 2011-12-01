@@ -57,7 +57,7 @@ public:
     Value(enum system::enum_field_types type, boost::uint32_t metadata, const char *storage) :
       m_type(type), m_storage(storage), m_metadata(metadata), m_is_null(false)
     {
-      m_size = calc_field_size((unsigned char)type,
+      m_size= calc_field_size((unsigned char)type,
                               (const unsigned char*)storage,
                               metadata);
       //std::cout << "TYPE: " << type << " SIZE: " << m_size << std::endl;
@@ -154,8 +154,6 @@ private:
 class Converter
 {
 public:
-
-	void to(long long &out, const Value &val) const;
     /**
      * Converts and copies the sql value to a std::string object.
      * @param[out] str The target string
