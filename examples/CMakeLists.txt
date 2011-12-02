@@ -7,7 +7,7 @@ include_directories(${PROJECT_BUILD_DIR}/include)
 # single file.
 foreach(prog basic-1 basic-2)
   ADD_EXECUTABLE(${prog} ${prog}.cpp)
-  TARGET_LINK_LIBRARIES(${prog} replication)
+  TARGET_LINK_LIBRARIES(${prog} replication ${Boost_LIBRARIES})
 endforeach()
 
-add_subdirectory(mysql2lucene EXCLUDE_FROM_ALL)
+#add_subdirectory(mysql2lucene EXCLUDE_FROM_ALL)
